@@ -14,6 +14,7 @@ Each sonda will define:
 # Data
 Each post or tweet is stored into a single XML file. This is an example of a post collected by Goliat 'facebookuser' plugin:
 
+<i>/data/dump/<b>20180227214109.trumpOnFacebook.facebookuser.8f5fb7986bd40a787c004f9ecaeaf921.xml</b></i>:
 <pre>
 &lt;?xml version="1.0"?&gt;
 &lt;post&gt;&lt;from_user&gt;Donald J. Trump&lt;/from_user&gt;&lt;from_user_id&gt;153080620724&lt;/from_user_id&gt;&lt;profile_image_url&gt;https://graph.facebook.com/153080620724/picture&lt;/profile_image_url&gt;&lt;text&gt;Tremendous things are happening!
