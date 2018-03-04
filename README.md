@@ -12,9 +12,11 @@ Each sonda will define:
 - Search Query or Account ID.
 
 # Data
-Each post or tweet is stored into a single XML file. This is an example of a tweet collected by Goliat 'twitter' plugin:
+Each post or tweet is stored into a single XML file. This is an example of a post collected by Goliat 'facebookuser' plugin:
 
 <pre>
-<?xml version="1.0"?>
-<post><created_at>2018-03-03 18:55:40</created_at><id_str>969994732540743680</id_str><text>Los hospitales valencianos privatizados vuelven al control p&#xFA;blico pese a la campa&#xF1;a legal en contra https://t.co/sQfBGmA3aH</text><source>&lt;a href="http://twitter.com" rel="nofollow"&gt;Twitter Web Client&lt;/a&gt;</source><retweet_count>739</retweet_count><favorite_count>968</favorite_count><lang>es</lang><from_user>iescolar</from_user><from_user_name>Ignacio Escolar</from_user_name><from_user_id>14436317</from_user_id><profile_image_url>http://pbs.twimg.com/profile_images/863361553025949696/KXqNkYUA_normal.jpg</profile_image_url></post>
+&lt;?xml version="1.0"?&gt;
+&lt;post&gt;&lt;from_user&gt;Donald J. Trump&lt;/from_user&gt;&lt;from_user_id&gt;153080620724&lt;/from_user_id&gt;&lt;profile_image_url&gt;https://graph.facebook.com/153080620724/picture&lt;/profile_image_url&gt;&lt;text&gt;Tremendous things are happening!
+
+"American consumers are the most confident they've been since 2000&#x2026;The unemployment rate has stayed at a 17-year low." https://usat.ly/2Fc6RmK&lt;/text&gt;&lt;created_at&gt;2018-02-27 21:41:09&lt;/created_at&gt;&lt;type&gt;photo&lt;/type&gt;&lt;link&gt;https://www.facebook.com/DonaldTrump/photos/a.488852220724.393301.153080620724/10160655279815725/?type=3&lt;/link&gt;&lt;id&gt;153080620724_10160655287330725&lt;/id&gt;&lt;/post&gt;
 </pre>
