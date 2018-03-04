@@ -15,6 +15,6 @@ define('_logfile', '/var/log/goliat_collector.log');
 define('_profile_limit', 2048);
 
 // **** Valid tokens are REQUIRED to get data from Facebook and Twitter ****
-define('TW_OAUTH_TOKEN', '2151724993-Y9ud9ZTCCF8XESMt9z6vXtPdQtIabQKQMH2qgCT');
-define('TW_OAUTH_SECRET', 'IPuLHpzffufbNXEY4vb3vua67DLC1VdUZNPIeM3sRKmqe');
-define('FB_TOKEN', '246063348785022|mUCXSG8ZR0uQ46tURVESg7Efpk8');
+define('TW_OAUTH_TOKEN', '');
+define('TW_OAUTH_SECRET', '');
+define('FB_TOKEN', '');

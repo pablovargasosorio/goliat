@@ -24,6 +24,13 @@ $f = fopen(_logfile, 'w');
 fputs($f, "++++++++ GOLIAT COLLECTOR STARTED (".date("d/m/Y H:i:s").") ++++++++\n\n");
 fclose($f);
 
+// Check correct configuration
+if (TW_OAUTH_TOKEN == '' || TW_OAUTH_SECRET == '' || FB_TOKEN == '') {
+    fputs($f, "Please set the access tokens into the config.inc file\n");
+    echo "Please fill the access tokens into the config.inc file\n";
+    exit;
+}
+
 // Clean previous execution queue
 $datedirs = scandir(_path_queue);
 foreach ($datedirs as $datedir)
@@ -41,8 +48,8 @@ foreach ($datedirs as $datedir)
 $sonda_files = scandir(_path_sondas);
 foreach ($sonda_files as $sonda_file) if ($sonda_file != '.' && $sonda_file != '..')
 {
-    if (preg_match("/\_/", $sonda_file)) {
-        echo "Invalid characters in sonda file name '$sonda_file'. Please remove underscore characters!\n";
+    if (preg_match("/[\_\.]/", $sonda_file)) {
+        echo "Invalid characters in sonda file name '$sonda_file'. Please remove underscore and dot characters!\n";
         exit;
     }
     init_sonda(_path_sondas . '/' . $sonda_file);
