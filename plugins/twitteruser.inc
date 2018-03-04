@@ -1,25 +1,19 @@
 <?php
-include 'lib/twitteroauth.php';
+include_once 'lib/twitteroauth.php';
 
-class twitter
+class twitteruser
 {
     private $sonda_id;
-    private $query;
-    private $query_not;
-    private $exact;
-    private $spa_force;
+    private $account_id;
     private $tmp_file;
     private $bypass;
     
-    private $plugin_code = 'twitter';
+    private $plugin_code = 'twitteruser';
     
     function __construct($request)
     {
         $this->sonda_id      = $request['sonda_id'];
-        $this->query         = $request['query'];
-        $this->query_not     = $request['query_not'];
-        $this->exact         = $request['exact'];
-        $this->spa_force     = $request['spa_force'];
+        $this->account_id    = $request['account_id'];
         $this->tmp_file      = $request['tmp_file'];
         $this->bypass        = FALSE;
     }
@@ -33,9 +27,12 @@ class twitter
     {
         // Query
         $output = self::get_request();
+        $status = self::get_status();
         
         // Process comments
         $ratio  = self::insert_data($output);
+        // Save profile info
+        self::update_status($status);
         
         // Predict and set the next query
         self::set_next_request($ratio);
@@ -49,77 +46,59 @@ class twitter
     public function get_request()
     {
         $output = array();
-        $out    = '';
-
+        
         $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, TW_OAUTH_TOKEN, TW_OAUTH_SECRET);
         
-        // Searching users
-        if (preg_match('/^userquery:(.+)/', $this->query, $matches))
-        {
-            $opts   = array('q' => $matches[1], 'count' => 5);
-            $method = 'users/search';
-        }
-        // Searching an user status
-        elseif (preg_match("/^\d+$/", $this->query))
-        {
-            $opts   = array('user_id' => $this->query);
-            $method = 'statuses/user_timeline';
-            //$out    = 'statuses';
-        }
-        // Normal query
-        else
-        {
-            $opts    = array('q' => urlencode(Util::nombrencode($this->query)), 'count' => 100);
-            $method  = 'search/tweets';
-            $out     = 'statuses';
-        	}
+        $opts   = array('user_id' => $this->account_id);
+        $method = 'statuses/user_timeline';
+        	
+        $output = objectToArray($connection->get($method, $opts));
 
-        	$_output = objectToArray($connection->get($method, $opts));
+        if ($output['errors'][0]['code'] == 88)
+        {
+            Util::log(_logfile, "\n*******************************RATE LIMIT EXCEEDED, bye bye...*************************\n");
+            exit;
+        }
+        elseif($output['errors'][0]['message']) {
+            Util::log(_logfile, "TwitterUser plugin error: ".$output['errors'][0]['message']."\n");
+            exit;
+        }
 
-        	if ($_output['errors'][0]['code'] == 88)
-        	{
-        	    Util::log(_logfile, "\n*******************************RATE LIMIT EXCEEDED, bye bye...*************************\n");
-        	    exit;
-        	}
-        	elseif($_output['errors'][0]['message']) {
-                Util::log(_logfile, "Twitter plugin error: ".$_output['errors'][0]['message']."\n");
-                exit;
-            }
-        	
-        	$output  = ($out != '') ? $_output[$out] : $_output;
-        	
-        	sleep(2);
-        	
-        	return $output;
+        sleep(2);
+
+        return $output;
     }
     
     /**
+     * Get the results of a Twitter API query request
      *
-     * @param unknown_type $comment
-     *
-     * @return string
+     * @return Array $output
      */
-    public function comment_is_valid($comment)
+    public function get_status()
     {
-        if (($this->exact || !preg_match("/\s/", $this->query)) && !preg_match("/^\d+$/", $this->query))
+        $output = array();
+    
+        $connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, TW_OAUTH_TOKEN, TW_OAUTH_SECRET);
+    
+        $opts   = array('user_id' => $this->account_id);
+        $method = 'users/show';
+    
+         
+        $output = objectToArray($connection->get($method, $opts));
+         
+        if ($output['errors'][0]['code'] == 88)
         {
-            // No exacto y con espacios (OR), y que no sea un usuario
-            if (!preg_match("/(\s|\"|\(|\[|\#|^)".quotemeta($this->query)."(\s|\,|\.|\;|\:|\!|\?|\"|\'|\]|\)|$)/i", $comment))
-            {
-                return "No presente (exact = $exact):".$this->query." en \"$comment\"";
-            }
+            Util::log(_logfile, "\n*******************************RATE LIMIT EXCEEDED, bye bye...*************************\n");
+            exit;
         }
-        elseif (!preg_match("/^\d+$/", $this->query))
-        {
-            if (!preg_match("/(\s|\"|\'|\(|\[|\#|^)(".str_replace(" ", "|", quotemeta($this->query)).")(\s|\,|\.|\;|\:|\!|\?|\"|\'|\]|\)|$)/i", $comment))
-            {
-                return "No presente (exact = ".$this->exact."):".$this->query." en \"$comment\"";
-            }
+        elseif($output['errors'][0]['message']) {
+            Util::log(_logfile, "TwitterUser plugin error: ".$output['errors'][0]['message']."\n");
+            exit;
         }
     
-        if ($this->query_not != "" && preg_match("/(\s|\"|\(|\[|\#|^)(".str_replace(" ", "|", quotemeta($this->query_not)).")(\s|\,|\.|\;|\:|\!|\?|\"|\'|\]|\)|$)/i", $comment)) return "Not:".$this->query_not." en \"$comment\"";
-    
-        return '';
+        sleep(2);
+         
+        return $output;
     }
     
     /**
@@ -157,14 +136,7 @@ class twitter
             
             $total++;
             	
-            
-            // Check if the comment is valid
-            $valid = self::comment_is_valid($data['text']);
-            	
-            if (is_array($data) 
-            && ($data['from_user'] != "" || $data['user']['screen_name'] != "") 
-            && !preg_match("/RT /", $data['text']) 
-            && $valid == "")
+            if (is_array($data))
             {
                 $data['created_at'] = date("Y-m-d H:i:s", strtotime($data['created_at']));
         
@@ -279,6 +251,37 @@ class twitter
         } else {
             return FALSE;
         }
+    }
+    
+    /**
+     *
+     * @param unknown_type $stream
+     */
+    private function update_status($data)
+    {
+        $pdir      = _path_data;
+        $statsdir  = _path_data.'/stats';
+    
+        if (!is_dir($pdir))
+        {
+            mkdir($pdir, 0777, true);
+        }
+    
+        if (!is_dir($statsdir))
+        {
+            mkdir($statsdir, 0777, true);
+        }
+    
+        $file = $statsdir.'/'.$this->sonda_id.'.dat';
+    
+        $data     = array_flip($data);
+        $xml      = new SimpleXMLElement('<post/>');
+        array_walk_recursive($data, array ($xml, 'addChild'));
+        $xml_data = $xml->asXML();
+    
+        $f = fopen($file, 'w');
+        fputs($f, $xml_data);
+        fclose($f);
     }
     
     function update_rrd($total)
@@ -397,7 +400,7 @@ class twitter
         {
             $offset = ($r > 1) ? $r*90 : 300;
         }
-
+        
         if ($offset > 172800)
         {
             $offset = 172800;
