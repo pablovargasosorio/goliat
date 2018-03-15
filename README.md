@@ -19,14 +19,14 @@ To run Goliat in your local machine you will need to follow these steps:
 - Configure the sources you want to track in the social media in \_path_sondas directory. You can use the samples provided in /sondas_examples to create your own.
 - Execute Goliat Collector running: <b>php goliat-collector.php</b>
 - If everything goes right, you should see something like this in the logfile <i>/var/log/goliat_collector.log</i>:
-<b><i>++++++++ GOLIAT COLLECTOR STARTED (15/03/2018 20:10:39) ++++++++
+<pre>++++++++ GOLIAT COLLECTOR STARTED (15/03/2018 20:10:39) ++++++++
 Executing plugin -> Facebookuser(trumpOnFacebook)
 25/25 comments
 Executing plugin -> Twitter(whiteHouseTwitterMention)
 25/100 comments
 Executing plugin -> Twitteruser(trumpOnTwitter)
 20/20 comments
-.......</i></b>
+.......</pre>
 - You should see how a bunch of new XML files are being created into your \_path_data directory.
 
 # Data
