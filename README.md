@@ -10,6 +10,15 @@ Each sonda will define:
 - Plugin used to connect to the data source (Twitter Search, Twitter User Feed, Facebook Page...)
 - Search Query or Account ID.
 
+# Get Started
+To run Goliat in your local machine you will need to follow these steps:
+- Download the PHP source code from here, and extract into a directory in your local machine (you can also clone the git repository)
+- Edit config.inc to include your Access Tokens for Facebook and Twitter (Learn more about how to create tokens https://developers.facebook.com/docs/facebook-login/access-tokens https://developer.twitter.com/en/docs/basics/authentication/guides/access-tokens)
+- Make sure you have the right permissions on the paths specified in config.inc.
+- Save your config.inc file.
+- Configure the sources you want to track in the social media in \_path_sondas directory. You can use the samples provided in /sondas_examples to create your own.
+- Execute Goliat Collector running: php goliat-collector.php
+
 # Data
 Each post or tweet is stored into a single XML file. This is an example of a post collected by Goliat 'facebookuser' plugin:
 
